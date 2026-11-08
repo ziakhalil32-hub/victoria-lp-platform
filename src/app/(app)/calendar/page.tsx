@@ -7,7 +7,7 @@ type Item = { date: string; kind: string; label: string; href: string; tone: str
 const TZ = 'America/Chicago'
 const iso = (ms: number) => new Date(ms).toISOString().slice(0, 10)
 const chicagoDate = (s: string) => new Date(s).toLocaleDateString('en-CA', { timeZone: TZ })
-const KINDS = [['content', 'Content'], ['task', 'Tasks'], ['milestone', 'Milestones'], ['launch', 'Launches & deadlines']]
+const KINDS = [['content', 'Content'], ['task', 'Tasks'], ['milestone', 'Milestones'], ['launch', 'Launches & deadlines'], ['event', 'Events']]
 const tone = { content: 'bg-blue-100 text-blue-800', task: 'bg-slate-100 text-slate-700', overdue: 'bg-red-100 text-red-700', milestone: 'bg-amber-100 text-amber-800', review: 'bg-orange-200 text-orange-900', launch: 'bg-green-100 text-green-800' }
 
 export default async function Calendar({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
@@ -19,17 +19,19 @@ export default async function Calendar({ searchParams }: { searchParams: Promise
   const gridEnd = gridStart + 41 * 86400000
   const from = iso(gridStart), to = iso(gridEnd)
   const sb = await createClient()
-  const [content, tasks, ms, products] = await Promise.all([
+  const [content, tasks, ms, products, events] = await Promise.all([
     sb.from('content').select('id,title,platform,scheduled_for,status,product_id').is('deleted_at', null).neq('status', 'archived').gte('scheduled_for', from + 'T00:00:00-08:00').lte('scheduled_for', to + 'T23:59:59-04:00'),
     sb.from('tasks').select('id,title,status,due_date,product_id').is('deleted_at', null).gte('due_date', from).lte('due_date', to),
     sb.from('v_milestones').select('id,title,start_date,end_date,display_status,product_id').lte('start_date', to).gte('end_date', from),
     sb.from('products').select('id,name,launch_date,presale_deadline').is('deleted_at', null),
+    sb.from('events').select('id,name,event_date,status,product_id').is('deleted_at', null).neq('status', 'cancelled').gte('event_date', from).lte('event_date', to),
   ])
   const pname = Object.fromEntries((products.data ?? []).map((p: any) => [p.id, p.name]))
   const items: Item[] = []; const days: Record<string, Item[]> = {}
   const put = (it: Item) => { if (f.product && it.product_id !== f.product) return; if (f.type && f.type !== it.kind) return; (days[it.date] ??= []).push(it); items.push(it) }
   ;(content.data ?? []).forEach((c: any) => c.scheduled_for && put({ date: chicagoDate(c.scheduled_for), kind: 'content', label: `${c.platform ?? 'Post'}: ${c.title}`, href: `/content/${c.id}`, tone: tone.content, product_id: c.product_id }))
   ;(tasks.data ?? []).forEach((t: any) => put({ date: t.due_date, kind: 'task', label: t.title + (t.status === 'done' ? ' ✓' : ''), href: '/today', tone: t.status !== 'done' && t.due_date < today ? tone.overdue : tone.task, product_id: t.product_id }))
+  ;(events.data ?? []).forEach((e: any) => put({ date: e.event_date, kind: 'event', label: `Event: ${e.name}`, href: `/events/${e.id}`, tone: 'bg-purple-100 text-purple-800', product_id: e.product_id }))
   ;(products.data ?? []).forEach((p: any) => {
     if (p.launch_date) put({ date: p.launch_date, kind: 'launch', label: `Launch: ${p.name}`, href: `/products/${p.id}`, tone: tone.launch, product_id: p.id })
     if (p.presale_deadline) put({ date: p.presale_deadline, kind: 'launch', label: `Presale ends: ${p.name}`, href: `/products/${p.id}`, tone: tone.launch, product_id: p.id })
@@ -78,7 +80,7 @@ export default async function Calendar({ searchParams }: { searchParams: Promise
               {list.slice(0, 4).map((it, n) => <Link key={n} href={it.href} title={it.label} className={`block truncate rounded px-1 text-[11px] ${it.tone}`}>{it.label}</Link>)}
               {list.length > 4 && <div className="text-[11px] text-slate-500">+{list.length - 4} more (use List view)</div>}</div> })}
         </div></div>)}
-      <p className="text-xs text-slate-500">Blue: content · Gray: tasks · Red: overdue · Amber: campaign milestones · Orange: milestone needing review · Green: launches and deadlines. To reschedule, open the item and change its date.</p>
+      <p className="text-xs text-slate-500">Blue: content · Gray: tasks · Red: overdue · Amber: campaign milestones · Orange: milestone needing review · Green: launches and deadlines · Purple: events. To reschedule, open the item and change its date.</p>
     </div>
   )
 }
