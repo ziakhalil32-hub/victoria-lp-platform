@@ -2,6 +2,7 @@
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAutosave, statusLabel } from '@/lib/useAutosave'
+import Attachments from '@/components/Attachments'
 
 type Row = Record<string, any>
 const STATUSES = ['idea','planned','drafting','ready_for_review','pending_approval','approved','scheduled','published','needs_revision','archived']
@@ -13,7 +14,7 @@ const cls = 'w-full border rounded-lg p-2 bg-white'
 const nice = (s: string) => s.replace(/_/g, ' ')
 const toLocal = (iso: string | null) => { if (!iso) return ''; const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16) }
 
-export default function ContentEditor({ content, products, versions, verifiedLinks }: { content: Row; products: Row[]; versions: Row[]; verifiedLinks: Row[] }) {
+export default function ContentEditor({ content, products, versions, verifiedLinks, attachments }: { content: Row; products: Row[]; versions: Row[]; verifiedLinks: Row[]; attachments: Row[] }) {
   const router = useRouter()
   const a = useAutosave()
   const [c, setC] = useState<Row>(content)
@@ -108,6 +109,8 @@ export default function ContentEditor({ content, products, versions, verifiedLin
             <input className={cls} placeholder={pl + ' hashtags'} value={vs[pl]?.hashtags ?? ''} onChange={e => editVersion(pl, { hashtags: e.target.value })} />
           </div>))}
       </section>
+
+      <Attachments table="content" id={c.id} initial={attachments as any} title="Media attachments" hint="Images, videos, PDFs, flyers, and other campaign materials for this post." />
 
       <section className="bg-white rounded-2xl border p-4 space-y-3">
         <h2 className="font-semibold">Results</h2><p className="text-xs text-slate-500">Leave blank if not recorded. Only enter numbers you have actually seen.</p>

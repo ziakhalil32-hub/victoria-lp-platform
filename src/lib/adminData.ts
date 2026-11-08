@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 // Every table the backup and export cover. All use an "id" column.
 export const TABLES = ['brands','products','product_links','course_chapters','campaigns','campaign_milestones','tasks','content','content_platform_versions','customers','orders','payments','expenses',
   'email_lists','subscribers','email_suppressions','email_campaigns','marketing_assets','asset_versions','reports','events','partnerships','outreach_interactions','social_targets','social_engagement',
-  'reviews','testimonials','application_settings','approvals','activity_logs']
+  'reviews','testimonials','attachments','application_settings','approvals','activity_logs']
 export async function isAdmin(sb: SupabaseClient) {
   const { data: { user } } = await sb.auth.getUser()
   if (!user) return false

@@ -1,11 +1,12 @@
 'use client'
 import { useState } from 'react'
 import { useAutosave, statusLabel } from '@/lib/useAutosave'
+import Attachments from '@/components/Attachments'
 type Row = Record<string, any>
 const CATS = ['paid_advertising','content_production','design','printing','events','software','other']
 const cls = 'w-full border rounded-lg p-2 bg-white'
 const nice = (s: string) => s.replace(/_/g, ' ')
-export default function ExpenseEditor({ expense, products }: { expense: Row; products: Row[] }) {
+export default function ExpenseEditor({ expense, products, attachments }: { expense: Row; products: Row[]; attachments: Row[] }) {
   const a = useAutosave(); const [e, setE] = useState<Row>(expense)
   a.register('expenses', e.id, expense.version)
   const edit = (patch: Row, imm = false) => { setE(x => ({ ...x, ...patch })); a.save('expenses', e.id, patch, imm) }
@@ -40,12 +41,13 @@ export default function ExpenseEditor({ expense, products }: { expense: Row; pro
         <label className="block text-sm"><span className="text-slate-600">Payment method</span><input className={cls} value={e.payment_method ?? ''} onChange={ev => edit({ payment_method: ev.target.value })} /></label>
         <label className="block text-sm md:col-span-2"><span className="text-slate-600">Description</span><textarea className={cls} rows={2} value={e.description ?? ''} onChange={ev => edit({ description: ev.target.value })} /></label>
         <label className="block text-sm"><span className="text-slate-600">Approval status</span><select className={cls} value={e.approval_status} onChange={ev => setApproval(ev.target.value)}>{['proposed','requires_approval','approved','rejected'].map(s => <option key={s} value={s}>{nice(s)}</option>)}</select></label>
-        <div className="text-sm text-slate-500 self-end">Receipt upload comes with the file library.</div>
+        <div className="text-sm text-slate-500 self-end">Attach receipts in the Receipts section below.</div>
       </section>
       <section className="bg-white rounded-2xl border p-4 space-y-3">
         <h2 className="font-semibold">Ad results (for paid advertising)</h2><p className="text-xs text-slate-500">Only enter numbers from your ad platform or sales records. Leave blank if not recorded.</p>
         <div className="grid gap-3 grid-cols-2 md:grid-cols-4">{N('Attributed new customers', 'attributed_customers')}{N('Attributed revenue ($)', 'attributed_revenue', '0.01')}{N('Link clicks', 'link_clicks')}{N('Conversions', 'conversions')}</div>
       </section>
+      <Attachments table="expenses" id={e.id} initial={attachments as any} title="Receipts" hint="Photos or PDFs of receipts and invoices for this expense." />
       <button className="text-sm text-slate-500 hover:text-red-600" onClick={archive}>Archive this expense</button>
     </div>
   )

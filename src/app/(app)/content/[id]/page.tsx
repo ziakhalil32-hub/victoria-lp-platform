@@ -6,17 +6,18 @@ export const dynamic = 'force-dynamic'
 export default async function ContentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const sb = await createClient()
-  const [c, products, versions, links] = await Promise.all([
+  const [c, products, versions, links, files] = await Promise.all([
     sb.from('content').select('*').eq('id', id).is('deleted_at', null).maybeSingle(),
     sb.from('products').select('id,name').is('deleted_at', null),
     sb.from('content_platform_versions').select('*').eq('content_id', id).is('deleted_at', null),
     sb.from('v_active_links').select('product_id,platform,url'),
+    sb.from('attachments').select('*').eq('entity_table', 'content').eq('entity_id', id).is('deleted_at', null).order('created_at', { ascending: false }),
   ])
   if (!c.data) notFound()
   return (
     <div className="space-y-4">
       <Link href="/content" className="text-sm text-blue-600">← All content</Link>
-      <ContentEditor content={c.data} products={products.data ?? []} versions={versions.data ?? []} verifiedLinks={links.data ?? []} />
+      <ContentEditor content={c.data} products={products.data ?? []} versions={versions.data ?? []} verifiedLinks={links.data ?? []} attachments={files.data ?? []} />
     </div>
   )
 }
