@@ -13,7 +13,7 @@ const PR: Record<string, number> = { urgent: 0, high: 1, normal: 2, low: 3 }
 
 export async function generateSections(sb: SupabaseClient, ws: string): Promise<Record<string, string>> {
   const we = addDays(ws, 6), nextEnd = addDays(we, 7), today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' })
-  const [pub, subs, newCust, pays, ords, exps, best, overdue, ms, links, revise, nextTasks, products] = await Promise.all([
+  const [pub, subs, newCust, pays, ords, exps, best, overdue, ms, links, revise, nextTasks, products, rev] = await Promise.all([
     sb.from('content').select('title,platform,products(name)').is('deleted_at', null).eq('status', 'published').gte('published_at', start(ws)).lte('published_at', end(we)),
     sb.from('subscribers').select('list_id,consent_status,email_lists(name)').is('deleted_at', null).gte('signup_date', ws).lte('signup_date', we),
     sb.from('customers').select('id').is('deleted_at', null).gte('created_at', start(ws)).lte('created_at', end(we)),
@@ -27,8 +27,9 @@ export async function generateSections(sb: SupabaseClient, ws: string): Promise<
     sb.from('content').select('id').is('deleted_at', null).eq('status', 'needs_revision'),
     sb.from('tasks').select('title,due_date,priority').is('deleted_at', null).neq('status', 'done').lte('due_date', nextEnd),
     sb.from('products').select('name,launch_date,presale_deadline').is('deleted_at', null),
+    sb.from('reviews').select('request_date,review_received,feedback_date,rating').is('deleted_at', null),
   ])
-  const firstErr = [pub, subs, newCust, pays, ords, exps, best, overdue, ms, links, revise, nextTasks, products].find(r => r.error)
+  const firstErr = [pub, subs, newCust, pays, ords, exps, best, overdue, ms, links, revise, nextTasks, products, rev].find(r => r.error)
   if (firstErr?.error) throw new Error(firstErr.error.message)
   const list = (a: string[]) => a.map(x => '• ' + x).join('\n')
   const out: Record<string, string> = {}
@@ -45,7 +46,10 @@ export async function generateSections(sb: SupabaseClient, ws: string): Promise<
   const O: any[] = ords.data ?? []
   out.sales = `Collected revenue (recorded payments minus refunds): ${money(net)}.\nOrders created: ${O.length} (${O.filter(o => ['pending', 'partially_paid'].includes(o.payment_status)).length} not fully paid yet).` + (PY.length ? '\n' + list(Object.entries(perP).map(([k, v]) => `${k}: ${money(v)}`)) : '')
   const az = O.filter(o => /amazon/i.test(o.platform ?? ''))
-  out.amazon = `Orders recorded with platform Amazon: ${az.length}.\nSales rank, ratings, and reviews: Not recorded (the reviews module is not built yet). Enter them here by hand from your Amazon dashboard.`
+  const RV2: any[] = rev.data ?? []
+  const reqW = RV2.filter(r => r.request_date && r.request_date >= ws && r.request_date <= we).length
+  const gotW = RV2.filter(r => r.review_received && r.feedback_date && r.feedback_date >= ws && r.feedback_date <= we)
+  out.amazon = `Orders recorded with platform Amazon: ${az.length}.\nReview requests sent this week: ${reqW}. Reviews received this week: ${gotW.length}${gotW.some(r => r.rating != null) ? ' (ratings: ' + gotW.filter(r => r.rating != null).map(r => r.rating).join(', ') + ')' : ''}.\nSales rank and listing traffic: Not recorded. Enter them here by hand from your Amazon dashboard.`
 
   const E: any[] = exps.data ?? []; const appr = E.filter(e => e.approval_status === 'approved').reduce((s, e) => s + Number(e.amount), 0)
   const pend = E.filter(e => ['proposed', 'requires_approval'].includes(e.approval_status))
