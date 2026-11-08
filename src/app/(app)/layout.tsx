@@ -4,7 +4,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen md:flex">
       <nav className="print:hidden md:w-60 bg-slate-900 text-slate-200 p-4 md:min-h-screen space-y-1">
-        <div className="font-semibold text-white mb-4">Victoria LP</div>
+        <div className="font-semibold text-white mb-2">Victoria LP</div>
+        <form action="/search" method="get" className="mb-3"><input name="q" type="search" placeholder="Search everything…" aria-label="Search everything" minLength={2} className="w-full rounded-lg bg-slate-800 text-white placeholder-slate-400 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" /></form>
         <a href="/dashboard" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Overview</a>
         <a href="/today" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Today & Tasks</a>
         <a href="/products" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Projects & Products</a>
