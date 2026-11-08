@@ -18,6 +18,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <a href="/expenses" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Advertising & Expenses</a>
         <a href="/email" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Email Marketing</a>
         <a href="/materials" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Marketing Materials</a>
+        <a href="/channels" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Channels</a>
         <a href="/reports" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Weekly Reports</a>
         <a href="/analytics" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Analytics</a>
         <a href="/admin" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Settings & Admin</a>
