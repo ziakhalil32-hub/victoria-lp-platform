@@ -19,6 +19,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <a href="/materials" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Marketing Materials</a>
         <a href="/reports" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Weekly Reports</a>
         <a href="/analytics" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Analytics</a>
+        <a href="/admin" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Settings & Admin</a>
         <a href="/content" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Content Studio</a>
         <a href="/social" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Social Media</a>
         {later.map(n => <div key={n} className="px-3 py-2 text-sm text-slate-500" title="Coming in a later step">{n}</div>)}

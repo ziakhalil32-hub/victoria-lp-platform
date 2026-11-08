@@ -15,10 +15,13 @@ export default async function ContentList({ searchParams }: { searchParams: Prom
   if (f.platform) q = q.eq('platform', f.platform)
   if (f.status) q = q.eq('status', f.status)
   if (f.q) q = q.ilike('title', `%${f.q}%`)
-  const [{ data, error }, products, all] = await Promise.all([
+  const [{ data, error }, products, all, mixRow] = await Promise.all([
     q, sb.from('products').select('id,name').is('deleted_at', null),
     sb.from('content').select('purpose').is('deleted_at', null).neq('status', 'archived').not('purpose', 'is', null),
+    sb.from('application_settings').select('value').eq('key', 'content_mix').maybeSingle(),
   ])
+  const mix: any = Object.assign({ educate_entertain: 3, trust: 1, promote: 1 }, (mixRow.data as any)?.value ?? {})
+  const mixTotal = Number(mix.educate_entertain) + Number(mix.trust) + Number(mix.promote)
   const count = (p: string) => (all.data ?? []).filter((r: any) => r.purpose === p).length
   const sel = 'border rounded-lg p-2 bg-white text-sm'
   return (
@@ -34,7 +37,7 @@ export default async function ContentList({ searchParams }: { searchParams: Prom
         <select name="status" defaultValue={f.status ?? ''} className={sel}><option value="">All statuses</option>{STATUSES.map(s => <option key={s} value={s}>{nice(s)}</option>)}</select>
         <button className="bg-slate-800 text-white rounded-lg px-3 text-sm">Filter</button>
       </form>
-      <p className="text-xs text-slate-500">Mix guideline (every 5 posts: 3 educate/entertain, 1 trust, 1 promote). Your tagged content so far: {count('educate_entertain')} educate/entertain · {count('trust')} trust · {count('promote')} promote. This is guidance only.</p>
+      <p className="text-xs text-slate-500">Mix guideline (every {mixTotal} posts: {mix.educate_entertain} educate/entertain, {mix.trust} trust, {mix.promote} promote; change it in Settings & Admin). Your tagged content so far: {count('educate_entertain')} educate/entertain · {count('trust')} trust · {count('promote')} promote. This is guidance only.</p>
       {error && <p className="text-red-600 text-sm">Could not load: {error.message}</p>}
       {(data ?? []).length === 0 ? <p className="text-sm text-slate-500">No content yet. Click “+ New content” to start your first idea.</p> : (
         <div className="overflow-x-auto bg-white rounded-2xl border">
