@@ -1,5 +1,5 @@
 import SignOut from '@/components/SignOut'
-const later = ['Social Media','Email Marketing','Events & Workshops','Partnerships','Reviews & Feedback','Marketing Materials','Weekly Reports','Analytics','Settings']
+const later = ['Social Media','Events & Workshops','Partnerships','Reviews & Feedback','Marketing Materials','Weekly Reports','Analytics','Settings']
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen md:flex">
@@ -12,6 +12,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <a href="/customers" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Customers & Leads</a>
         <a href="/sales" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Sales & Orders</a>
         <a href="/expenses" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Advertising & Expenses</a>
+        <a href="/email" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Email Marketing</a>
         <a href="/content" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Content Studio</a>
         {later.map(n => <div key={n} className="px-3 py-2 text-sm text-slate-500" title="Coming in a later step">{n}</div>)}
         <div className="pt-4"><SignOut /></div>
