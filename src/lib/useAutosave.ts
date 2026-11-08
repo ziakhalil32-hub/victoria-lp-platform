@@ -35,6 +35,7 @@ export function useAutosave() {
       const { data, error } = await sb.from(table).update(patch).eq('id', id).eq('version', versions.current[k]).select('version').maybeSingle()
       if (!error && data) { versions.current[k] = data.version; pending.current--; if (pending.current === 0) setStatus('saved'); return }
       if (!error && !data) { pending.current--; setStatus('failed'); setMsg('This record was changed on another device. Refresh the page to see the latest version. Your last edit was NOT saved.'); return }
+      if (error?.code === '23505') { pending.current--; setStatus('failed'); setMsg('That value already exists on another record (for example, a duplicate email). Change it and try again.'); return }
       await sleep(500 * 2 ** attempt)
     }
     pending.current--; setStatus('failed'); setMsg('Could not save. Check your connection and try again.')
