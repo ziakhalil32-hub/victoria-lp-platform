@@ -1,11 +1,12 @@
 import SignOut from '@/components/SignOut'
-const later = ['Projects & Products','Marketing Calendar','Content Studio','Social Media','Email Marketing','Customers & Leads','Sales & Orders','Events & Workshops','Partnerships','Reviews & Feedback','Advertising & Expenses','Marketing Materials','Weekly Reports','Analytics','Settings']
+const later = ['Marketing Calendar','Content Studio','Social Media','Email Marketing','Customers & Leads','Sales & Orders','Events & Workshops','Partnerships','Reviews & Feedback','Advertising & Expenses','Marketing Materials','Weekly Reports','Analytics','Settings']
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen md:flex">
       <nav className="md:w-60 bg-slate-900 text-slate-200 p-4 md:min-h-screen space-y-1">
         <div className="font-semibold text-white mb-4">Victoria LP</div>
-        <a href="/today" className="block rounded-lg bg-blue-600 text-white px-3 py-2 text-sm">Today & Tasks</a>
+        <a href="/today" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Today & Tasks</a>
+        <a href="/products" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Projects & Products</a>
         {later.map(n => <div key={n} className="px-3 py-2 text-sm text-slate-500" title="Coming in a later step">{n}</div>)}
         <div className="pt-4"><SignOut /></div>
       </nav>
