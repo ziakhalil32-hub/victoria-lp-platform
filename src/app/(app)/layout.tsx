@@ -1,5 +1,5 @@
 import SignOut from '@/components/SignOut'
-const later = ['Social Media','Partnerships','Reviews & Feedback','Analytics','Settings']
+const later = ['Social Media','Reviews & Feedback','Analytics','Settings']
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen md:flex">
@@ -12,6 +12,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <a href="/customers" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Customers & Leads</a>
         <a href="/sales" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Sales & Orders</a>
         <a href="/events" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Events & Workshops</a>
+        <a href="/outreach" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Partnerships & Outreach</a>
         <a href="/expenses" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Advertising & Expenses</a>
         <a href="/email" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Email Marketing</a>
         <a href="/materials" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Marketing Materials</a>
