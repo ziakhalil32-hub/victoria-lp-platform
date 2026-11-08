@@ -17,7 +17,7 @@ export default async function Dashboard() {
     sb.from('v_revenue_by_product').select('*'),
     sb.from('payments').select('amount,kind,paid_at').is('deleted_at', null),
     sb.from('customers').select('id,lead_status,customer_status,next_follow_up_date,first_name,last_name').is('deleted_at', null),
-    sb.from('expenses').select('amount,approval_status').is('deleted_at', null),
+    sb.from('expenses').select('amount,approval_status,category,attributed_customers').is('deleted_at', null),
     sb.from('content').select('product_id,status').is('deleted_at', null),
     sb.from('tasks').select('id,title,status,due_date,product_id').is('deleted_at', null).neq('status', 'done'),
     sb.from('v_milestones').select('product_id,status'),
@@ -32,6 +32,8 @@ export default async function Dashboard() {
   const buyers = C.filter((c: any) => c.customer_status !== 'prospect').length
   const qualified = C.filter((c: any) => c.lead_status === 'qualified').length
   const spend = (expenses.data ?? []).filter((e: any) => e.approval_status === 'approved').reduce((s: number, e: any) => s + Number(e.amount), 0)
+  const adRows = (expenses.data ?? []).filter((e: any) => e.approval_status === 'approved' && e.category === 'paid_advertising')
+  const adSpend = adRows.reduce((s: number, e: any) => s + Number(e.amount), 0), adCust = adRows.reduce((s: number, e: any) => s + Number(e.attributed_customers ?? 0), 0)
   const byMonth: Record<string, number> = {}
   ;(payments.data ?? []).forEach((p: any) => { const k = p.paid_at.slice(0, 7); byMonth[k] = (byMonth[k] ?? 0) + (p.kind === 'refund' ? -1 : 1) * Number(p.amount) })
   const msAll = ms.data ?? []
@@ -52,7 +54,7 @@ export default async function Dashboard() {
         {kpi('Collected revenue', money(totalRev), 'Recorded payments minus refunds')}{kpi('Orders', String(totalOrders))}
         {kpi('Customers', String(buyers), `${C.length} total contacts`)}{kpi('Qualified leads', String(qualified))}
         {kpi('Marketing expenses', spend > 0 ? money(spend) : 'Not recorded', 'Approved expenses only')}{kpi('Email subscribers', 'Not tracked yet', 'Email module comes later')}
-        {kpi('Customer acquisition cost', 'Not recorded', 'Needs approved ad spend and attributed customers')}{kpi('Campaign progress', allMs + '%', 'Milestones you confirmed done')}
+        {kpi('Customer acquisition cost', adSpend > 0 && adCust > 0 ? money(adSpend / adCust) : 'Not recorded', 'Approved ad spend ÷ attributed customers')}{kpi('Campaign progress', allMs + '%', 'Milestones you confirmed done')}
       </section>
       <section className="grid gap-3 md:grid-cols-3">
         {P.map((p: any) => { const r = R.find(x => x.product_id === p.id); const pub = (content.data ?? []).filter((c: any) => c.product_id === p.id && c.status === 'published').length; const left = (tasks.data ?? []).filter((t: any) => t.product_id === p.id).length
