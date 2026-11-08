@@ -1,9 +1,9 @@
 import SignOut from '@/components/SignOut'
-const later = ['Social Media','Events & Workshops','Partnerships','Reviews & Feedback','Weekly Reports','Analytics','Settings']
+const later = ['Social Media','Events & Workshops','Partnerships','Reviews & Feedback','Analytics','Settings']
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen md:flex">
-      <nav className="md:w-60 bg-slate-900 text-slate-200 p-4 md:min-h-screen space-y-1">
+      <nav className="print:hidden md:w-60 bg-slate-900 text-slate-200 p-4 md:min-h-screen space-y-1">
         <div className="font-semibold text-white mb-4">Victoria LP</div>
         <a href="/dashboard" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Overview</a>
         <a href="/today" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Today & Tasks</a>
@@ -14,6 +14,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <a href="/expenses" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Advertising & Expenses</a>
         <a href="/email" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Email Marketing</a>
         <a href="/materials" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Marketing Materials</a>
+        <a href="/reports" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Weekly Reports</a>
         <a href="/content" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Content Studio</a>
         {later.map(n => <div key={n} className="px-3 py-2 text-sm text-slate-500" title="Coming in a later step">{n}</div>)}
         <div className="pt-4"><SignOut /></div>
