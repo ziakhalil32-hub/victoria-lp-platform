@@ -1,5 +1,5 @@
 import SignOut from '@/components/SignOut'
-const later = ['Social Media','Reviews & Feedback','Analytics','Settings']
+const later = ['Reviews & Feedback','Analytics','Settings']
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen md:flex">
@@ -18,6 +18,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <a href="/materials" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Marketing Materials</a>
         <a href="/reports" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Weekly Reports</a>
         <a href="/content" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Content Studio</a>
+        <a href="/social" className="block rounded-lg hover:bg-slate-800 px-3 py-2 text-sm">Social Media</a>
         {later.map(n => <div key={n} className="px-3 py-2 text-sm text-slate-500" title="Coming in a later step">{n}</div>)}
         <div className="pt-4"><SignOut /></div>
       </nav>
