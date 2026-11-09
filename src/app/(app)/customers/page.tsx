@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import NewCustomer from '@/components/NewCustomer'
+import ImportCustomers from '@/components/ImportCustomers'
 export const dynamic = 'force-dynamic'
 const nice = (s: string | null) => (s ? s.replace(/_/g, ' ') : '–')
 const LEAD = ['new','contacted','interested','qualified','follow_up_required','converted','not_interested','archived']
@@ -20,6 +21,7 @@ export default async function Customers({ searchParams }: { searchParams: Promis
         <div><h1 className="text-2xl font-semibold">Customers & Leads</h1><p className="text-slate-500">Everyone you are talking to or selling to, with follow-up dates.</p></div>
         <NewCustomer />
       </header>
+      <ImportCustomers />
       <form className="flex flex-wrap gap-2">
         <input name="q" defaultValue={f.q} placeholder="Search name, email, organization" className={sel + ' min-w-[14rem]'} />
         <select name="lead" defaultValue={f.lead ?? ''} className={sel}><option value="">All lead statuses</option>{LEAD.map(s => <option key={s} value={s}>{nice(s)}</option>)}</select>

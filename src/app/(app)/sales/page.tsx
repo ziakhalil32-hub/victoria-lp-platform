@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import NewOrder from '@/components/NewOrder'
+import ImportOrders from '@/components/ImportOrders'
 export const dynamic = 'force-dynamic'
 const nice = (s: string) => s.replace(/_/g, ' ')
 const money = (n: any) => '$' + Number(n ?? 0).toFixed(2)
@@ -23,6 +24,7 @@ export default async function Sales({ searchParams }: { searchParams: Promise<Re
         <div><h1 className="text-2xl font-semibold">Sales & Orders</h1><p className="text-slate-500">Revenue counts only payments you have recorded, minus refunds.</p></div>
         <NewOrder customers={customers.data ?? []} products={products.data ?? []} presetCustomer={f.new} />
       </header>
+      <ImportOrders />
       <section className="grid gap-3 md:grid-cols-4">
         <div className="bg-white border rounded-2xl p-4"><div className="text-xs text-slate-500">Collected revenue</div><div className="text-2xl font-semibold">{money(totalRev)}</div></div>
         {(rev.data ?? []).map((r: any) => <div key={r.product_id} className="bg-white border rounded-2xl p-4"><div className="text-xs text-slate-500">{r.name}</div><div className="text-lg font-semibold">{money(r.collected_revenue)}</div><div className="text-xs text-slate-500">{r.orders} orders</div></div>)}
@@ -33,7 +35,7 @@ export default async function Sales({ searchParams }: { searchParams: Promise<Re
         <select name="pay" defaultValue={f.pay ?? ''} className={sel}><option value="">All payment statuses</option>{['pending','paid','partially_paid','refunded','cancelled'].map(s => <option key={s} value={s}>{nice(s)}</option>)}</select>
         <button className="bg-slate-800 text-white rounded-lg px-3 text-sm">Filter</button><a href="/sales/export" className="border rounded-lg px-3 py-2 bg-white text-sm">Export CSV</a>
       </form>
-      {(error || rev.error) && <p className="text-red-600 text-sm">Could not load: {(error ?? rev.error)?.message}</p>}
+      {(error || rev.error || customers.error) && <p className="text-red-600 text-sm">Could not load: {(error ?? rev.error ?? customers.error)?.message}</p>}
       {(data ?? []).length === 0 ? <p className="text-sm text-slate-500">No orders recorded yet. Revenue shows $0.00 until you record real payments.</p> : (
         <div className="overflow-x-auto bg-white rounded-2xl border"><table className="w-full text-sm">
           <thead className="text-left text-slate-500"><tr>{['Order','Date','Customer','Product','Total','Payment','Fulfillment','Platform'].map(h => <th key={h} className="p-3 font-medium">{h}</th>)}</tr></thead>
